@@ -6,7 +6,7 @@
 //! use pxlfmt::{Pixel, Abgr8888, RgbaFormat};
 //!
 //! // A single pixel in the Abgr8888 format, wrapping a u32 value.
-//! let mut pixel = Pixel::<Abgr8888>::from(0xFF00_00FF);
+//! let mut pixel = Pixel::<Abgr8888>::new(0xFF00_00FF);
 //!
 //! // The API provides convenient accessors based on the format.
 //! assert_eq!(pixel.red(), 0xFF);
