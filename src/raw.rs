@@ -81,12 +81,16 @@ pub trait RawPixel: From<Self::Value> {
 /// A raw pixel value represented as a 32-bit unsigned integer.
 ///
 /// Each channel is stored as one of the four 8-bit components.
+///
+/// # Layout
+///
+/// This struct is identical to a `u32` in memory (`#[repr(transparent)]`).
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
 #[repr(transparent)]
 pub struct U32x8888(u32);
 
 impl U32x8888 {
-    /// Creates a new pixel from the given ABGR value.
+    /// Creates a new raw pixel value from the given 32-bit unsigned integer.
     #[must_use]
     pub const fn new(value: u32) -> Self {
         Self(value)

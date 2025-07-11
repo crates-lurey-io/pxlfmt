@@ -169,17 +169,14 @@ pub struct Pixel<F: Format> {
 
 impl<F: Format> Pixel<F> {
     /// Creates a new pixel with the given raw value.
-    pub const fn new(raw: F::RawPixel) -> Self {
-        Self {
-            raw,
-            format: PhantomData,
-        }
+    pub fn new(raw: impl Into<F::RawPixel>) -> Self {
+        Self::from_raw_pixel(raw.into())
     }
 
-    /// Creates a new pixel from a raw pixel value.
-    pub fn from(raw: impl Into<F::RawPixel>) -> Self {
+    #[inline]
+    const fn from_raw_pixel(raw: F::RawPixel) -> Self {
         Self {
-            raw: raw.into(),
+            raw,
             format: PhantomData,
         }
     }
