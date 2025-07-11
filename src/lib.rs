@@ -20,7 +20,9 @@
 //! assert_eq!(pixel.raw().raw(), 0xFF4488FF);
 //! ```
 
-use std::marker::PhantomData;
+#![no_std]
+
+use core::marker::PhantomData;
 
 use crate::{
     internal::Sealed,
@@ -190,12 +192,12 @@ impl<F: Format> Pixel<F> {
     /// Casts a slice of raw pixel values to a slice of `Pixel<F>`.
     pub fn as_slice(buffer: &[F::RawPixel]) -> &[Self] {
         // The cast from a raw pointer to a Pixel pointer is safe because of #[repr(transparent)].
-        unsafe { std::slice::from_raw_parts(buffer.as_ptr().cast::<Self>(), buffer.len()) }
+        unsafe { core::slice::from_raw_parts(buffer.as_ptr().cast::<Self>(), buffer.len()) }
     }
 
     /// Casts a mutable slice of raw pixel values to a mutable slice of `Pixel<F>`.
     pub fn as_slice_mut(buffer: &mut [F::RawPixel]) -> &mut [Self] {
-        unsafe { std::slice::from_raw_parts_mut(buffer.as_mut_ptr().cast::<Self>(), buffer.len()) }
+        unsafe { core::slice::from_raw_parts_mut(buffer.as_mut_ptr().cast::<Self>(), buffer.len()) }
     }
 }
 
