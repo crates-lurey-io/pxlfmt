@@ -154,7 +154,7 @@ impl RgbaFormat for Abgr8888 {
 /// ```rust
 /// use pxlfmt::{Pixel, Abgr8888};
 ///
-/// let pixel = Pixel::<Abgr8888>::from(0xFF00_00FF);
+/// let pixel = Pixel::<Abgr8888>::new(0xFF00_00FF);
 /// assert_eq!(pixel.red(), 0xFF);
 /// assert_eq!(pixel.green(), 0x00);
 /// assert_eq!(pixel.blue(), 0x00);
