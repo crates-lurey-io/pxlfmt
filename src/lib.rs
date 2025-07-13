@@ -145,11 +145,11 @@ impl RgbaFormat for Abgr8888 {
 ///
 /// This struct wraps a raw pixel value and provides methods to access and modify its channels.
 ///
-/// # Layout
+/// ## Layout
 ///
 /// This struct is always represnted directly as the raw pixel value, with no additional padding.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```rust
 /// use pxlfmt::{Pixel, Abgr8888};

@@ -27,7 +27,7 @@
 ///
 /// This trait provides methods to get and set the individual channels of a pixel.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```rust
 /// use pxlfmt::raw::RawPixel;
@@ -82,7 +82,7 @@ pub trait RawPixel: From<Self::Value> {
 ///
 /// Each channel is stored as one of the four 8-bit components.
 ///
-/// # Layout
+/// ## Layout
 ///
 /// This struct is identical to a `u32` in memory (`#[repr(transparent)]`).
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
