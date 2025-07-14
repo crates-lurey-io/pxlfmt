@@ -3,6 +3,7 @@
 Type-safe pixel formats and pixel manipulation.
 
 [![Test](https://github.com/crates-lurey-io/pxlfmt/actions/workflows/test.yml/badge.svg)](https://github.com/crates-lurey-io/pxlfmt/actions/workflows/test.yml)
+[![Docs](https://github.com/crates-lurey-io/pxlfmt/actions/workflows/docs.yml/badge.svg)](https://github.com/crates-lurey-io/pxlfmt/actions/workflows/docs.yml)
 [![Crates.io Version](https://img.shields.io/crates/v/pxlfmt)](https://crates.io/crates/pxlfmt)
 [![codecov](https://codecov.io/gh/crates-lurey-io/pxlfmt/graph/badge.svg?token=Z3VUWA3WYY)](https://codecov.io/gh/crates-lurey-io/pxlfmt)
 
