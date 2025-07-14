@@ -29,13 +29,17 @@ fix:
 check:
     cargo just format
     cargo just lint
+    cargo just doc-check
 
 doc:
     cargo doc --all-features --no-deps --open --lib
 
+doc-check:
+    RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
+
 doc-gen:
     cargo clean --doc
-    cargo doc --no-deps
+    RUSTDOCFLAGS="-D warnings" cargo doc --no-deps
     echo '<meta http-equiv="refresh" content="0;url=pxlfmt/index.html">' > target/doc/index.html
     rm target/doc/.lock
 
