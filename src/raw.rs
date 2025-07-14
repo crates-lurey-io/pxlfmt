@@ -20,8 +20,10 @@
 //! assert_eq!(raw_pixel.get_channel(1), 0xFF); // Now Green
 //!
 //! // The underlying raw value can be accessed directly
-//! assert_eq!(raw_pixel.raw(), 0xFF00_FFFF);
+//! assert_eq!(raw_pixel.into_inner(), 0xFF00_FFFF);
 //! ```
+
+use core::fmt::{LowerHex, UpperHex};
 
 /// A trait for types that can represent a raw pixel value.
 ///
@@ -48,6 +50,14 @@
 ///   fn set_channel(&mut self, offset: usize, value: Self::Channel) {
 ///     let mask = !(0xFF << (offset * 8));
 ///     self.0 = (self.0 & mask) | (u32::from(value) << (offset * 8));
+///   }
+///
+///   fn as_inner(&self) -> &Self::Value {
+///     &self.0
+///   }
+///
+///   fn into_inner(self) -> Self::Value {
+///     self.0
 ///   }
 /// }
 ///
@@ -76,6 +86,25 @@ pub trait RawPixel: From<Self::Value> {
     ///
     /// The offset is based on the pixel's channel order, where `0` is the first channel.
     fn set_channel(&mut self, offset: usize, value: Self::Channel);
+
+    /// Returns the underlying raw value.
+    #[must_use]
+    fn as_inner(&self) -> &Self::Value;
+
+    /// Consumes the pixel and returns the underlying raw value.
+    #[must_use]
+    fn into_inner(self) -> Self::Value;
+}
+impl UpperHex for U32x8888 {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{:X}", self.into_inner())
+    }
+}
+
+impl LowerHex for U32x8888 {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{:x}", self.into_inner())
+    }
 }
 
 /// A raw pixel value represented as a 32-bit unsigned integer.
@@ -98,7 +127,7 @@ impl U32x8888 {
 
     /// Returns the underlying raw value.
     #[must_use]
-    pub const fn raw(&self) -> u32 {
+    pub const fn into_inner(self) -> u32 {
         self.0
     }
 }
@@ -120,5 +149,13 @@ impl RawPixel for U32x8888 {
     fn set_channel(&mut self, offset: usize, value: Self::Channel) {
         let mask = !(0xFF << (offset * 8));
         self.0 = (self.0 & mask) | (u32::from(value) << (offset * 8));
+    }
+
+    fn as_inner(&self) -> &Self::Value {
+        &self.0
+    }
+
+    fn into_inner(self) -> Self::Value {
+        self.0
     }
 }

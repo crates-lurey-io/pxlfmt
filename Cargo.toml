@@ -3,9 +3,9 @@ name = "pxlfmt"
 edition = "2024"
 license = "MIT"
 
-description = "Type-safe pixel formats and pixel manipulation"
+description = "Pixel formats and manipulation"
 repository = "https://github.com/crates-lurey-io/pxlfmt"
-version = "0.1.0"
+version = "0.2.0"
 
 [lints.clippy]
 pedantic = "deny"
