@@ -1,4 +1,4 @@
-//! Foundational traits and types for raw pixel data representation.
+//! Raw pixel data representation.
 //!
 //! This module provides the lowest-level building blocks for the crate, defining how raw pixel
 //! values are stored and manipulated before a specific format is applied. The central component is
@@ -40,6 +40,7 @@ use core::fmt::{LowerHex, UpperHex};
 /// pub struct U32x8888(u32);
 ///
 /// impl RawPixel for U32x8888 {
+///   const DEFAULT: Self = Self(0);
 ///   type Channel = u8;
 ///   type Value = u32;
 ///
@@ -68,6 +69,9 @@ use core::fmt::{LowerHex, UpperHex};
 /// }
 /// ```
 pub trait RawPixel: From<Self::Value> {
+    /// The default value type for the pixel.
+    const DEFAULT: Self;
+
     /// The underlying type used to the entire value of the pixel.
     type Value;
 
@@ -121,7 +125,7 @@ impl LowerHex for U32x8888 {
 /// ## Layout
 ///
 /// This struct is identical to a `u32` in memory (`#[repr(transparent)]`).
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Copy, Clone, Default, Debug, Eq, PartialEq, Ord, PartialOrd)]
 #[repr(transparent)]
 pub struct U32x8888(u32);
 
@@ -130,12 +134,6 @@ impl U32x8888 {
     #[must_use]
     pub const fn new(value: u32) -> Self {
         Self(value)
-    }
-
-    /// Returns the underlying raw value.
-    #[must_use]
-    pub const fn into_inner(self) -> u32 {
-        self.0
     }
 }
 
@@ -146,6 +144,7 @@ impl From<u32> for U32x8888 {
 }
 
 impl RawPixel for U32x8888 {
+    const DEFAULT: Self = Self(0);
     type Value = u32;
     type Channel = u8;
 

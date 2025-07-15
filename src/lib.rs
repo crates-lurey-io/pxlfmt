@@ -12,7 +12,7 @@
 //! use pxlfmt::prelude::*;
 //!
 //! // A single pixel in the Rgba8888 format, wrapping a u32 value.
-//! let mut pixel = Pixel::<Rgba8888>::new(0xFF00_00FF);
+//! let mut pixel = Pixel::<Rgba8888>::with_rgba(0xFF, 0x00, 0x00, 0xFF);
 //!
 //! // The API provides convenient accessors based on the format.
 //! assert_eq!(pixel.red(), 0xFF);
@@ -28,8 +28,8 @@
 
 #![no_std]
 
-pub mod core;
 pub mod formats;
+pub mod pixel;
 pub mod prelude;
 pub mod raw;
 pub mod uint;

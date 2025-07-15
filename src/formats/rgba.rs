@@ -7,7 +7,7 @@ mod rgba8888;
 pub use rgba8888::Rgba8888;
 
 use crate::{
-    core::{Format, Pixel},
+    pixel::{Format, Pixel},
     raw::RawPixel,
 };
 
@@ -87,41 +87,78 @@ pub trait RgbaFormat: Format<Channels = Rgba> {
 impl<F: RgbaFormat> Pixel<F> {
     /// Returns the red channel value of the pixel.
     pub fn red(&self) -> <F::RawPixel as RawPixel>::Channel {
-        F::get_red(&self.raw)
+        F::get_red(self.as_raw())
     }
 
     /// Sets the red channel value of the pixel.
-    pub fn set_red(&mut self, value: <F::RawPixel as RawPixel>::Channel) {
-        F::set_red(&mut self.raw, value);
+    pub fn set_red(&mut self, value: <F::RawPixel as RawPixel>::Channel) -> &mut Self {
+        F::set_red(self.as_raw_mut(), value);
+        self
     }
 
     /// Returns the green channel value of the pixel.
     pub fn green(&self) -> <F::RawPixel as RawPixel>::Channel {
-        F::get_green(&self.raw)
+        F::get_green(self.as_raw())
     }
 
     /// Sets the green channel value of the pixel.
-    pub fn set_green(&mut self, value: <F::RawPixel as RawPixel>::Channel) {
-        F::set_green(&mut self.raw, value);
+    pub fn set_green(&mut self, value: <F::RawPixel as RawPixel>::Channel) -> &mut Self {
+        F::set_green(self.as_raw_mut(), value);
+        self
     }
 
     /// Returns the blue channel value of the pixel.
     pub fn blue(&self) -> <F::RawPixel as RawPixel>::Channel {
-        F::get_blue(&self.raw)
+        F::get_blue(self.as_raw())
     }
 
     /// Sets the blue channel value of the pixel.
-    pub fn set_blue(&mut self, value: <F::RawPixel as RawPixel>::Channel) {
-        F::set_blue(&mut self.raw, value);
+    pub fn set_blue(&mut self, value: <F::RawPixel as RawPixel>::Channel) -> &mut Self {
+        F::set_blue(self.as_raw_mut(), value);
+        self
     }
 
     /// Returns the alpha channel value of the pixel.
     pub fn alpha(&self) -> <F::RawPixel as RawPixel>::Channel {
-        F::get_alpha(&self.raw)
+        F::get_alpha(self.as_raw())
     }
 
     /// Sets the alpha channel value of the pixel.
-    pub fn set_alpha(&mut self, value: <F::RawPixel as RawPixel>::Channel) {
-        F::set_alpha(&mut self.raw, value);
+    pub fn set_alpha(&mut self, value: <F::RawPixel as RawPixel>::Channel) -> &mut Self {
+        F::set_alpha(self.as_raw_mut(), value);
+        self
+    }
+}
+
+impl<F> Pixel<F>
+where
+    F: RgbaFormat,
+{
+    /// Creates a new pixel from RGBA channel values.
+    ///
+    /// This method initializes the pixel with the specified red, green, blue, and alpha values.
+    pub fn with_rgba(
+        r: <F::RawPixel as RawPixel>::Channel,
+        g: <F::RawPixel as RawPixel>::Channel,
+        b: <F::RawPixel as RawPixel>::Channel,
+        a: <F::RawPixel as RawPixel>::Channel,
+    ) -> Self {
+        let mut pixel = Self::from_raw(F::RawPixel::DEFAULT);
+        pixel.set_red(r).set_green(g).set_blue(b).set_alpha(a);
+        pixel
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn with_rgba() {
+        let pixel = Pixel::<Rgba8888>::with_rgba(0xFF, 0x00, 0x00, 0xFF);
+        assert_eq!(pixel.red(), 0xFF);
+        assert_eq!(pixel.green(), 0x00);
+        assert_eq!(pixel.blue(), 0x00);
+        assert_eq!(pixel.alpha(), 0xFF);
     }
 }

@@ -10,5 +10,6 @@
 //! assert_eq!(pixel.alpha(), 0xFF);
 //! ```
 
-pub use crate::core::{Format, Pixel};
 pub use crate::formats::rgba::{Rgba, Rgba8888, RgbaFormat};
+pub use crate::pixel::{Format, Pixel};
+pub use crate::raw::RawPixel as _;

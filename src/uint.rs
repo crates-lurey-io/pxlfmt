@@ -1,4 +1,4 @@
-//! Sealed traits implemented by Rust's unsigned integer types.
+//! Unsigned integer types.
 
 use crate::internal::Sealed;
 

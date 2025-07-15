@@ -1,4 +1,4 @@
-//! Core pixel format traits and types.
+//! [`Pixel`] is the organization and characteristics of pixel data in memory.
 
 use crate::raw::RawPixel;
 use core::{
@@ -7,16 +7,16 @@ use core::{
 };
 
 /// Describes the organization and characteristics of pixel data in memory.
-///
-/// The following associated types are defined:
-/// - `RawPixel`: The type used to represent the raw pixel data (e.g., [`U32x8888`][]).
-/// - `Channels`: The type representing the channels of the pixel (e.g., [`Rgba`][]).
-///
-/// [`U32x8888`]: crate::raw::U32x8888
-/// [`Rgba`]: crate::formats::rgba::Rgba
 #[allow(private_bounds)]
 pub trait Format: 'static + crate::internal::Sealed {
+    /// Used to represent the raw pixel data in memory (e.g., [`U32x8888`][]).
+    ///
+    /// [`U32x8888`]: crate::raw::U32x8888
     type RawPixel: RawPixel;
+
+    /// The type representing the channels of the pixel (e.g., [`Rgba`][]).
+    ///
+    /// [`Rgba`]: crate::formats::rgba::Rgba
     type Channels: Copy + Eq + Ord;
 }
 
@@ -31,9 +31,9 @@ pub trait Format: 'static + crate::internal::Sealed {
 /// ## Example
 ///
 /// ```rust
-/// use pxlfmt::{core::Pixel, formats::rgba::Abgr8888};
+/// use pxlfmt::{formats::rgba::Abgr8888, pixel::Pixel};
 ///
-/// let pixel = Pixel::<Abgr8888>::new(0xFF00_00FF);
+/// let pixel = Pixel::<Abgr8888>::with_rgba(0xFF, 0x00, 0x00, 0xFF);
 /// assert_eq!(pixel.red(), 0xFF);
 /// assert_eq!(pixel.green(), 0x00);
 /// assert_eq!(pixel.blue(), 0x00);
@@ -42,8 +42,14 @@ pub trait Format: 'static + crate::internal::Sealed {
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
 #[repr(transparent)]
 pub struct Pixel<F: Format> {
-    pub(crate) raw: F::RawPixel,
+    raw: F::RawPixel,
     format: PhantomData<F>,
+}
+
+impl<F: Format> Default for Pixel<F> {
+    fn default() -> Self {
+        Self::from_raw(F::RawPixel::DEFAULT)
+    }
 }
 
 #[cfg(feature = "bytemuck")]
@@ -63,22 +69,50 @@ where
 }
 
 impl<F: Format> Pixel<F> {
-    /// Creates a new pixel with the given raw value.
+    /// Creates a new pixel by converting a value that can be converted into the raw pixel type.
     pub fn new(raw: impl Into<F::RawPixel>) -> Self {
-        Self::from_raw_pixel(raw.into())
+        Self::from_raw(raw.into())
     }
 
-    #[inline]
-    const fn from_raw_pixel(raw: F::RawPixel) -> Self {
+    /// Creates a new pixel from a raw pixel value.
+    pub const fn from_raw(raw: F::RawPixel) -> Self {
         Self {
             raw,
             format: PhantomData,
         }
     }
 
-    /// Returns the raw pixel value.
+    /// Returns a reference to the raw pixel value.
     pub const fn as_raw(&self) -> &F::RawPixel {
         &self.raw
+    }
+
+    /// Returns a mutable reference to the raw pixel value.
+    pub fn as_raw_mut(&mut self) -> &mut F::RawPixel {
+        &mut self.raw
+    }
+
+    /// Consumes the pixel and returns the raw pixel value.
+    pub fn into_raw(self) -> F::RawPixel {
+        self.raw
+    }
+}
+
+impl<F> AsRef<F::RawPixel> for Pixel<F>
+where
+    F: Format,
+{
+    fn as_ref(&self) -> &F::RawPixel {
+        self.as_raw()
+    }
+}
+
+impl<F> AsMut<F::RawPixel> for Pixel<F>
+where
+    F: Format,
+{
+    fn as_mut(&mut self) -> &mut F::RawPixel {
+        self.as_raw_mut()
     }
 }
 
@@ -129,6 +163,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "bytemuck")]
     fn u32_pixel_cast_bytemuck() {
         let pixels = [Pixel::<crate::formats::rgba::Rgba8888>::new(0xFF00_00FF)];
         let bytes: &[u8] = bytemuck::cast_slice(&pixels);
@@ -137,5 +172,43 @@ mod tests {
         let pixels_back: &[Pixel<crate::formats::rgba::Rgba8888>] = bytemuck::cast_slice(bytes);
         assert_eq!(pixels_back.len(), 1);
         assert_eq!(pixels_back[0].as_raw().into_inner(), 0xFF00_00FF);
+    }
+
+    #[test]
+    fn into_raw() {
+        let pixel = Pixel::<crate::formats::rgba::Rgba8888>::with_rgba(0xFF, 0x00, 0x00, 0xFF);
+        assert_eq!(pixel.into_raw().into_inner(), 0xFF00_00FF);
+    }
+
+    #[test]
+    fn as_raw() {
+        let pixel = Pixel::<crate::formats::rgba::Rgba8888>::with_rgba(0xFF, 0x00, 0x00, 0xFF);
+        assert_eq!(pixel.as_raw().into_inner(), 0xFF00_00FF);
+    }
+
+    #[test]
+    fn as_raw_mut() {
+        let mut pixel = Pixel::<crate::formats::rgba::Rgba8888>::with_rgba(0xFF, 0x00, 0x00, 0xFF);
+        pixel.as_raw_mut().set_channel(0, 0x01);
+        assert_eq!(pixel.as_raw().into_inner(), 0xFF00_0001);
+    }
+
+    #[test]
+    fn as_ref() {
+        let pixel = Pixel::<crate::formats::rgba::Rgba8888>::with_rgba(0xFF, 0x00, 0x00, 0xFF);
+        assert_eq!(pixel.as_ref().into_inner(), 0xFF00_00FF);
+    }
+
+    #[test]
+    fn as_mut() {
+        let mut pixel = Pixel::<crate::formats::rgba::Rgba8888>::with_rgba(0xFF, 0x00, 0x00, 0xFF);
+        pixel.as_mut().set_channel(0, 0x01);
+        assert_eq!(pixel.as_raw().into_inner(), 0xFF00_0001);
+    }
+
+    #[test]
+    fn default() {
+        let pixel = Pixel::<crate::formats::rgba::Rgba8888>::default();
+        assert_eq!(pixel.as_raw().into_inner(), 0x0000_0000);
     }
 }
