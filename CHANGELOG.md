@@ -11,10 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Abgr8888` and `Rgba8888` are now `Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd`
 - Optional feature `bytemuck` enables `Pod + Zeroable` for pixel representations
+- `Pixel::as_raw_mut`, and `AsRef[Mut]` for `Pixel<F>` to access the raw pixel representation
+- `RawPixel` must implement `Default`
 
 ### Changed
 
 - Removed `as_slice` and `as_slice_mut` in favor of (optional) `bytemuck`
+- Renamed `pxlfmt::core` to `pxlfmt::pixel`
 
 ## [0.2.0] - 2025-07-14
 

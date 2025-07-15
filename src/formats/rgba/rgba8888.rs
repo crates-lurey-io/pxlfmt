@@ -1,6 +1,6 @@
 use crate::{
-    core::Format,
     formats::rgba::{Rgba, RgbaFormat},
+    pixel::Format,
     raw::U32x8888,
 };
 
@@ -30,7 +30,7 @@ impl RgbaFormat for Rgba8888 {
 
 #[cfg(test)]
 mod tests {
-    use crate::core::Pixel;
+    use crate::{pixel::Pixel, raw::RawPixel};
 
     use super::*;
 
