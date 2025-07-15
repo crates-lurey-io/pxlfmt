@@ -179,4 +179,16 @@ mod tets {
         let bytes: &[u8] = bytemuck::cast_slice(&binding);
         assert_eq!(bytes, &[0xFF, 0x00, 0x00, 0xFF]);
     }
+
+    #[test]
+    fn as_inner() {
+        let pixel = U32x8888::new(0xFF00_00FF);
+        assert_eq!(pixel.as_inner(), &0xFF00_00FF);
+    }
+
+    #[test]
+    fn into_inner() {
+        let pixel = U32x8888::new(0xFF00_00FF);
+        assert_eq!(pixel.into_inner(), 0xFF00_00FF);
+    }
 }

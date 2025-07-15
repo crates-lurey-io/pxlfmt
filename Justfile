@@ -54,7 +54,7 @@ test-all:
     cargo just test-doc --all-features
     
 coverage *ARGS:
-    cargo tool cargo-llvm-cov --lib --open
+    cargo tool cargo-llvm-cov --all-features --lib --open
 
 coverage-gen:
-    cargo tool cargo-llvm-cov --lib --lcov --output-path lcov.info
+    cargo tool cargo-llvm-cov --all-features --lib --lcov --output-path lcov.info
