@@ -13,6 +13,7 @@ use crate::{
 /// - `A`lpha (8 bits)
 ///
 /// The pixel is represented as a 32-bit unsigned integer, where each channel occupies 8 bits.
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum Rgba8888 {}
 
 impl crate::internal::Sealed for Rgba8888 {}

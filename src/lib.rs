@@ -1,5 +1,11 @@
 //! A foundational crate for type-safe, zero-cost pixel format manipulation.
 //!
+//! ## Features
+//!
+//! ### `bytemuck`
+//!
+//! Implements `bytemuck::{Pod, Zeroable}` for raw pixel wrappers and `Pixel`
+//!
 //! # Example
 //!
 //! ```rust

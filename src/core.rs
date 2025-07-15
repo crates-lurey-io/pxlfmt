@@ -15,7 +15,7 @@ use core::{
 /// [`U32x8888`]: crate::raw::U32x8888
 /// [`Rgba`]: crate::formats::rgba::Rgba
 #[allow(private_bounds)]
-pub trait Format: crate::internal::Sealed {
+pub trait Format: 'static + crate::internal::Sealed {
     type RawPixel: RawPixel;
     type Channels: Copy + Eq + Ord;
 }
@@ -46,6 +46,22 @@ pub struct Pixel<F: Format> {
     format: PhantomData<F>,
 }
 
+#[cfg(feature = "bytemuck")]
+unsafe impl<F> bytemuck::Zeroable for Pixel<F>
+where
+    F: Format,
+    F::RawPixel: bytemuck::Zeroable,
+{
+}
+
+#[cfg(feature = "bytemuck")]
+unsafe impl<F> bytemuck::Pod for Pixel<F>
+where
+    F: Format + Copy,
+    F::RawPixel: bytemuck::Pod,
+{
+}
+
 impl<F: Format> Pixel<F> {
     /// Creates a new pixel with the given raw value.
     pub fn new(raw: impl Into<F::RawPixel>) -> Self {
@@ -63,17 +79,6 @@ impl<F: Format> Pixel<F> {
     /// Returns the raw pixel value.
     pub const fn as_raw(&self) -> &F::RawPixel {
         &self.raw
-    }
-
-    /// Casts a slice of raw pixel values to a slice of `Pixel<F>`.
-    pub fn as_slice(buffer: &[F::RawPixel]) -> &[Self] {
-        // The cast from a raw pointer to a Pixel pointer is safe because of #[repr(transparent)].
-        unsafe { core::slice::from_raw_parts(buffer.as_ptr().cast::<Self>(), buffer.len()) }
-    }
-
-    /// Casts a mutable slice of raw pixel alues to a mutable slice of `Pixel<F>`.
-    pub fn as_slice_mut(buffer: &mut [F::RawPixel]) -> &mut [Self] {
-        unsafe { core::slice::from_raw_parts_mut(buffer.as_mut_ptr().cast::<Self>(), buffer.len()) }
     }
 }
 
@@ -114,5 +119,23 @@ mod tests {
     fn lower_hex() {
         let pixel = Pixel::<crate::formats::rgba::Rgba8888>::new(0xFF00_00FF);
         assert_eq!(format!("{pixel:x}"), "ff0000ff");
+    }
+
+    #[test]
+    fn u32_pixel_is_copy() {
+        fn is_copy<T: Copy>() {}
+        is_copy::<Pixel<crate::formats::rgba::Rgba8888>>();
+        is_copy::<Pixel<crate::formats::rgba::Abgr8888>>();
+    }
+
+    #[test]
+    fn u32_pixel_cast_bytemuck() {
+        let pixels = [Pixel::<crate::formats::rgba::Rgba8888>::new(0xFF00_00FF)];
+        let bytes: &[u8] = bytemuck::cast_slice(&pixels);
+        assert_eq!(bytes, &[0xFF, 0x00, 0x00, 0xFF]);
+
+        let pixels_back: &[Pixel<crate::formats::rgba::Rgba8888>] = bytemuck::cast_slice(bytes);
+        assert_eq!(pixels_back.len(), 1);
+        assert_eq!(pixels_back[0].as_raw().into_inner(), 0xFF00_00FF);
     }
 }

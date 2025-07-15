@@ -13,6 +13,7 @@ use crate::{
 /// - `R`ed (8 bits)
 ///
 /// The pixel is represented as a 32-bit unsigned integer, where each channel occupies 8 bits.
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum Abgr8888 {}
 
 impl crate::internal::Sealed for Abgr8888 {}
@@ -48,10 +49,11 @@ mod tests {
         assert_eq!(pixel.as_raw().into_inner(), 0x0403_0201);
     }
 
+    #[cfg(feature = "bytemuck")]
     #[test]
-    fn cast_slice() {
+    fn cast_slice_bytemuck() {
         let buffer = [U32x8888::new(0xFF00_00FF)];
-        let pixels = Pixel::<Abgr8888>::as_slice(&buffer);
+        let pixels = bytemuck::cast_slice::<_, Pixel<Abgr8888>>(&buffer);
         assert_eq!(pixels.len(), 1);
         assert_eq!(pixels[0].red(), 0xFF);
         assert_eq!(pixels[0].green(), 0x00);
@@ -59,10 +61,11 @@ mod tests {
         assert_eq!(pixels[0].alpha(), 0xFF);
     }
 
+    #[cfg(feature = "bytemuck")]
     #[test]
     fn cast_slice_mut() {
         let mut buffer = [U32x8888::new(0xFF00_00FF)];
-        let pixels = Pixel::<Abgr8888>::as_slice_mut(&mut buffer);
+        let pixels = bytemuck::cast_slice_mut::<_, Pixel<Abgr8888>>(&mut buffer);
         assert_eq!(pixels.len(), 1);
         assert_eq!(pixels[0].red(), 0xFF);
         assert_eq!(pixels[0].green(), 0x00);

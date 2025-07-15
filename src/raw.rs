@@ -95,6 +95,13 @@ pub trait RawPixel: From<Self::Value> {
     #[must_use]
     fn into_inner(self) -> Self::Value;
 }
+
+#[cfg(feature = "bytemuck")]
+unsafe impl bytemuck::Pod for U32x8888 {}
+
+#[cfg(feature = "bytemuck")]
+unsafe impl bytemuck::Zeroable for U32x8888 {}
+
 impl UpperHex for U32x8888 {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "{:X}", self.into_inner())
@@ -157,5 +164,19 @@ impl RawPixel for U32x8888 {
 
     fn into_inner(self) -> Self::Value {
         self.0
+    }
+}
+
+#[cfg(test)]
+mod tets {
+    use super::*;
+
+    #[cfg(feature = "bytemuck")]
+    #[test]
+    fn bytemuck_cast() {
+        let pixel = U32x8888::new(0xFF00_00FF);
+        let binding = [pixel];
+        let bytes: &[u8] = bytemuck::cast_slice(&binding);
+        assert_eq!(bytes, &[0xFF, 0x00, 0x00, 0xFF]);
     }
 }
