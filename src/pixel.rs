@@ -10,7 +10,7 @@ pub mod raw;
 
 /// Describes the organization and characteristics of pixel data in memory.
 #[allow(private_bounds)]
-pub trait Format: 'static + crate::internal::Sealed {
+pub trait Format: 'static + Copy + crate::internal::Sealed {
     /// Used to represent the raw pixel data in memory (e.g., [`U32x8888`][]).
     ///
     /// [`U32x8888`]: crate::pixel::raw::U32x8888
@@ -216,8 +216,26 @@ mod tests {
 
     #[test]
     fn is_copy() {
-        fn is_copy<T: Copy>() {}
-        is_copy::<Pixel<crate::formats::rgba::Rgba8888>>();
-        is_copy::<Pixel<crate::formats::rgba::Abgr8888>>();
+        trait DrawPixel<F: Format> {
+            fn draw_10x(&mut self, color: Pixel<F>);
+        }
+
+        struct Canvas<F: Format> {
+            pixels: alloc::vec::Vec<Pixel<F>>,
+        }
+
+        impl<F: Format> DrawPixel<F> for Canvas<F> {
+            fn draw_10x(&mut self, color: Pixel<F>) {
+                for _ in 0..10 {
+                    self.pixels.push(color);
+                }
+            }
+        }
+
+        let mut canvas = Canvas::<crate::formats::rgba::Rgba8888> {
+            pixels: alloc::vec::Vec::new(),
+        };
+        let color = Pixel::<crate::formats::rgba::Rgba8888>::with_rgba(0xFF, 0x00, 0x00, 0xFF);
+        canvas.draw_10x(color);
     }
 }
