@@ -1,6 +1,6 @@
 # pxlfmt
 
-Type-safe pixel formats and pixel manipulation.
+Pixel formats and manipulation.
 
 [![Test](https://github.com/crates-lurey-io/pxlfmt/actions/workflows/test.yml/badge.svg)](https://github.com/crates-lurey-io/pxlfmt/actions/workflows/test.yml)
 [![Docs](https://github.com/crates-lurey-io/pxlfmt/actions/workflows/docs.yml/badge.svg)](https://github.com/crates-lurey-io/pxlfmt/actions/workflows/docs.yml)
