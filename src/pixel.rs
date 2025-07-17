@@ -213,4 +213,11 @@ mod tests {
         let pixel = Pixel::<crate::formats::rgba::Rgba8888>::default();
         assert_eq!(pixel.as_raw().into_inner(), 0x0000_0000);
     }
+
+    #[test]
+    fn is_copy() {
+        fn is_copy<T: Copy>() {}
+        is_copy::<Pixel<crate::formats::rgba::Rgba8888>>();
+        is_copy::<Pixel<crate::formats::rgba::Abgr8888>>();
+    }
 }
