@@ -11,5 +11,4 @@
 //! ```
 
 pub use crate::formats::rgba::{Rgba, Rgba8888, RgbaFormat};
-pub use crate::pixel::{Format, Pixel};
-pub use crate::raw::RawPixel as _;
+pub use crate::pixel::{Format, Pixel, raw::RawPixel as _};

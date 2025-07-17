@@ -31,7 +31,6 @@
 pub mod formats;
 pub mod pixel;
 pub mod prelude;
-pub mod raw;
 pub mod uint;
 
 pub(crate) mod internal;
