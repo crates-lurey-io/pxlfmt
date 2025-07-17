@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed `U32x8888::new` to `U32x8888::from_u32`
 - Renamed `RawPixel::Value` to `RawPixel::Storage`
 - `RawPixel::set_channel` now returns `&mut Self`
+- `RawPixel` must now be `Copy`
 
 ## [0.3.0] - 2025-07-15
 

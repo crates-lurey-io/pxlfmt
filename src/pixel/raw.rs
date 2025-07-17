@@ -75,7 +75,7 @@ pub use u32x8888::U32x8888;
 ///   }
 /// }
 /// ```
-pub trait RawPixel: From<Self::Storage> {
+pub trait RawPixel: Copy + From<Self::Storage> {
     /// The default value type for the pixel.
     const DEFAULT: Self;
 
@@ -146,5 +146,12 @@ mod tests {
         let mut pixel = U32x8888::from(0xFF00_00FF);
         pixel = pixel.with_channel(1, 0xFF);
         assert_eq!(pixel.get_channel(1), 0xFF); // Green channel
+    }
+
+    #[test]
+    fn raw_pixel_is_copy() {
+        let pixel = U32x8888::from(0xFF00_00FF);
+        let pixel_copy = pixel;
+        assert_eq!(pixel_copy.into_inner(), 0xFF00_00FF);
     }
 }
