@@ -1,17 +1,19 @@
 //! [`Pixel`] is the organization and characteristics of pixel data in memory.
 
-use crate::raw::RawPixel;
+use crate::pixel::raw::RawPixel;
 use core::{
     fmt::{LowerHex, UpperHex},
     marker::PhantomData,
 };
+
+pub mod raw;
 
 /// Describes the organization and characteristics of pixel data in memory.
 #[allow(private_bounds)]
 pub trait Format: 'static + crate::internal::Sealed {
     /// Used to represent the raw pixel data in memory (e.g., [`U32x8888`][]).
     ///
-    /// [`U32x8888`]: crate::raw::U32x8888
+    /// [`U32x8888`]: crate::pixel::raw::U32x8888
     type RawPixel: RawPixel;
 
     /// The type representing the channels of the pixel (e.g., [`Rgba`][]).

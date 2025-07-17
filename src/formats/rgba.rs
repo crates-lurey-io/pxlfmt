@@ -6,10 +6,7 @@ pub use abgr8888::Abgr8888;
 mod rgba8888;
 pub use rgba8888::Rgba8888;
 
-use crate::{
-    pixel::{Format, Pixel},
-    raw::RawPixel,
-};
+use crate::pixel::{Format, Pixel, raw::RawPixel};
 
 /// Channels representing `R`ed, `G`reen, `B`lue, and `A`lpha components of a pixel.
 ///

@@ -1,7 +1,6 @@
 use crate::{
     formats::rgba::{Rgba, RgbaFormat},
-    pixel::Format,
-    raw::U32x8888,
+    pixel::{Format, raw::U32x8888},
 };
 
 /// A 32-bit RGBA pixel format with four 8-bit channels.
@@ -30,13 +29,16 @@ impl RgbaFormat for Rgba8888 {
 
 #[cfg(test)]
 mod tests {
-    use crate::{pixel::Pixel, raw::RawPixel};
+    use crate::pixel::{
+        Pixel,
+        raw::{RawPixel, U32x8888},
+    };
 
     use super::*;
 
     #[test]
     fn rgba8888() {
-        let mut pixel: Pixel<Rgba8888> = Pixel::new(U32x8888::new(0xFF00_00FF));
+        let mut pixel: Pixel<Rgba8888> = Pixel::new(U32x8888::from(0xFF00_00FF));
         assert_eq!(pixel.red(), 0xFF);
         assert_eq!(pixel.green(), 0x00);
         assert_eq!(pixel.blue(), 0x00);
