@@ -136,3 +136,15 @@ pub trait RawPixel: From<Self::Storage> {
     #[must_use]
     fn into_inner(self) -> Self::Storage;
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn with_channel() {
+        let mut pixel = U32x8888::from(0xFF00_00FF);
+        pixel = pixel.with_channel(1, 0xFF);
+        assert_eq!(pixel.get_channel(1), 0xFF); // Green channel
+    }
+}

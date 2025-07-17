@@ -14,7 +14,7 @@ pub struct F32x4([f32; 4]);
 impl F32x4 {
     /// Creates a new raw pixel value with all channels set to zero.
     #[must_use]
-    pub const fn new_zero() -> Self {
+    pub const fn new_zeroed() -> Self {
         Self([0.0; 4])
     }
 
@@ -101,5 +101,50 @@ mod tests {
     fn into_inner() {
         let pixel = F32x4::from([0.0, 1.0, 2.0, 3.0]);
         assert_eq!(pixel.into_inner(), [0.0, 1.0, 2.0, 3.0]);
+    }
+
+    #[test]
+    #[allow(clippy::float_cmp)]
+    fn new_zero() {
+        let pixel = F32x4::new_zeroed();
+        assert_eq!(pixel.as_inner(), &[0.0, 0.0, 0.0, 0.0]);
+    }
+
+    #[test]
+    #[allow(clippy::float_cmp)]
+    fn from_f32x4() {
+        let pixel = F32x4::from_f32x4([0.0, 1.0, 2.0, 3.0]);
+        assert_eq!(pixel.as_inner(), &[0.0, 1.0, 2.0, 3.0]);
+    }
+
+    #[test]
+    #[allow(clippy::float_cmp)]
+    fn from_channels() {
+        let pixel = F32x4::from_channels(0.0, 1.0, 2.0, 3.0);
+        assert_eq!(pixel.as_inner(), &[0.0, 1.0, 2.0, 3.0]);
+    }
+
+    #[test]
+    #[allow(clippy::float_cmp)]
+    fn get_channel() {
+        let pixel = F32x4::from([0.0, 1.0, 2.0, 3.0]);
+        assert_eq!(pixel.get_channel(0), 0.0);
+        assert_eq!(pixel.get_channel(1), 1.0);
+        assert_eq!(pixel.get_channel(2), 2.0);
+        assert_eq!(pixel.get_channel(3), 3.0);
+    }
+
+    #[test]
+    #[allow(clippy::float_cmp)]
+    fn set_channel() {
+        let mut pixel = F32x4::from([0.0, 1.0, 2.0, 3.0]);
+        pixel.set_channel(0, 4.0);
+        pixel.set_channel(1, 5.0);
+        pixel.set_channel(2, 6.0);
+        pixel.set_channel(3, 7.0);
+        assert_eq!(pixel.get_channel(0), 4.0);
+        assert_eq!(pixel.get_channel(1), 5.0);
+        assert_eq!(pixel.get_channel(2), 6.0);
+        assert_eq!(pixel.get_channel(3), 7.0);
     }
 }

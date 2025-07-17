@@ -16,7 +16,7 @@ pub struct U32x8888(u32);
 impl U32x8888 {
     /// Creates a new raw pixel value with all channels set to zero.
     #[must_use]
-    pub const fn new_zero() -> Self {
+    pub const fn new_zeroed() -> Self {
         Self(0)
     }
 
@@ -103,6 +103,24 @@ mod tets {
     #[test]
     fn into_inner() {
         let pixel = U32x8888::from(0xFF00_00FF);
+        assert_eq!(pixel.into_inner(), 0xFF00_00FF);
+    }
+
+    #[test]
+    fn new_zero() {
+        let pixel = U32x8888::new_zeroed();
+        assert_eq!(pixel.into_inner(), 0);
+    }
+
+    #[test]
+    fn from_u32() {
+        let pixel = U32x8888::from_u32(0xFF00_00FF);
+        assert_eq!(pixel.into_inner(), 0xFF00_00FF);
+    }
+
+    #[test]
+    fn from_channels() {
+        let pixel = U32x8888::from_channels(0xFF, 0x00, 0x00, 0xFF);
         assert_eq!(pixel.into_inner(), 0xFF00_00FF);
     }
 }
