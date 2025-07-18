@@ -3,6 +3,9 @@
 mod abgr8888;
 pub use abgr8888::Abgr8888;
 
+mod float_rgba;
+pub use float_rgba::FloatRgba;
+
 mod rgba8888;
 pub use rgba8888::Rgba8888;
 

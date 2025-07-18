@@ -16,10 +16,12 @@ use crate::{
 pub enum Rgba8888 {}
 
 impl crate::internal::Sealed for Rgba8888 {}
+
 impl Format for Rgba8888 {
     type RawPixel = U32x8888;
     type Channels = Rgba;
 }
+
 impl RgbaFormat for Rgba8888 {
     const RED_OFFSET: usize = 0;
     const GREEN_OFFSET: usize = 1;
@@ -37,7 +39,13 @@ mod tests {
     use super::*;
 
     #[test]
-    fn rgba8888() {
+    fn new_zeroed() {
+        let pixel: Pixel<Rgba8888> = Pixel::zeroed();
+        assert_eq!(pixel.as_raw().into_inner(), 0x0000_0000);
+    }
+
+    #[test]
+    fn from_raw() {
         let mut pixel: Pixel<Rgba8888> = Pixel::new(U32x8888::from(0xFF00_00FF));
         assert_eq!(pixel.red(), 0xFF);
         assert_eq!(pixel.green(), 0x00);

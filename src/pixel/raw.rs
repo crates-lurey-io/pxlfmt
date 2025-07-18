@@ -50,11 +50,11 @@ pub use u32x8888::U32x8888;
 ///   type Channel = u8;
 ///   type Storage = u32;
 ///
-///   fn get_channel(&self, offset: usize) -> Self::Channel {
+///   unsafe fn get_channel_unchecked(&self, offset: usize) -> Self::Channel {
 ///     (self.0 >> (offset * 8) & 0xFF) as u8
 ///   }
 ///
-///   fn set_channel(&mut self, offset: usize, value: Self::Channel) -> &mut Self {
+///   unsafe fn set_channel_unchecked(&mut self, offset: usize, value: Self::Channel) -> &mut Self {
 ///     let mask = !(0xFF << (offset * 8));
 ///     self.0 = (self.0 & mask) | (u32::from(value) << (offset * 8));
 ///     self
@@ -102,7 +102,19 @@ pub trait RawPixel: Copy + From<Self::Storage> {
     ///
     /// If `offset` is out of bounds for the pixel's channel count, this method will panic.
     #[must_use]
-    fn get_channel(&self, offset: usize) -> Self::Channel;
+    fn get_channel(&self, offset: usize) -> Self::Channel {
+        assert!(offset < Self::CHANNELS, "Offset out of bounds");
+        unsafe { self.get_channel_unchecked(offset) }
+    }
+
+    /// Gets the channel at the provided offset without bounds checking.
+    ///
+    /// The offset is based on the pixel's channel order, where `0` is the first channel.
+    ///
+    /// ## Safety
+    ///
+    /// `offset` must be a valid index for the pixel's channel count.
+    unsafe fn get_channel_unchecked(&self, offset: usize) -> Self::Channel;
 
     /// Sets the channel at the provided offset to the given value.
     ///
@@ -111,7 +123,68 @@ pub trait RawPixel: Copy + From<Self::Storage> {
     /// ## Panics
     ///
     /// If `offset` is out of bounds for the pixel's channel count, this method will panic.
-    fn set_channel(&mut self, offset: usize, value: Self::Channel) -> &mut Self;
+    fn set_channel(&mut self, offset: usize, value: Self::Channel) -> &mut Self {
+        assert!(offset < Self::CHANNELS, "Offset out of bounds");
+        unsafe { self.set_channel_unchecked(offset, value) }
+    }
+
+    /// Sets the channel at the provided offset to the given value without bounds checking.
+    ///
+    /// The offset is based on the pixel's channel order, where `0` is the first channel.
+    ///
+    /// ## Safety
+    ///
+    /// `offset` must be a valid index for the pixel's channel count.
+    unsafe fn set_channel_unchecked(&mut self, offset: usize, value: Self::Channel) -> &mut Self;
+
+    /// Returns a new pixel with each channel from the respective offset in the given slice.
+    ///
+    /// The offset is based on the pixel's channel order, where `0` is the first channel.
+    ///
+    /// ## Panics
+    ///
+    /// If `offset` is out of bounds for the pixel's channel count, this method will panic.
+    #[must_use]
+    fn from_channels(channels: &[Self::Channel]) -> Self
+    where
+        Self::Channel: Copy,
+    {
+        assert_eq!(channels.len(), Self::CHANNELS, "Invalid number of channels");
+        unsafe { Self::from_channels_unchecked(channels) }
+    }
+
+    /// Returns a new pixel with each channel from the respective offset in the given slice.
+    ///
+    /// The offset is based on the pixel's channel order, where `0` is the first channel.
+    ///
+    /// ## Safety
+    ///
+    /// `channels` must have a length equal to `Self::CHANNELS`.
+    #[must_use]
+    unsafe fn from_channels_unchecked(channels: &[Self::Channel]) -> Self
+    where
+        Self::Channel: Copy,
+    {
+        debug_assert_eq!(channels.len(), Self::CHANNELS, "Invalid number of channels");
+        let mut pixel = Self::DEFAULT;
+        for (i, channel) in channels.iter().enumerate() {
+            unsafe { pixel.set_channel_unchecked(i, *channel) };
+        }
+        pixel
+    }
+
+    /// Returns a new pixel with all channels set to the given value.
+    #[must_use]
+    fn splat(value: Self::Channel) -> Self
+    where
+        Self::Channel: Copy,
+    {
+        let mut pixel = Self::DEFAULT;
+        for i in 0..Self::CHANNELS {
+            unsafe { pixel.set_channel_unchecked(i, value) };
+        }
+        pixel
+    }
 
     /// Returns a new pixel with the channel at the provided offset set to the given value.
     ///

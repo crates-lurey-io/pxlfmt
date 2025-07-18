@@ -9,8 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `RawPixel::from_channels` and `RawPixel::from_channels_unchecked`
+- `RawPixel::splat`
 - `RawPixel::CHANNELS` and `RawPixel::with_channel`
 - `F32x4` as a `RawPixel` implementation
+- `Pixel::zeroed` (even if `feature = "bytemuck"` is not enabled)
 
 ### Changed
 
@@ -19,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed `RawPixel::Value` to `RawPixel::Storage`
 - `RawPixel::set_channel` now returns `&mut Self`
 - `RawPixel` must now be `Copy`
+- `RawPixel` now requires `set_channel_unchecked` and `get_channel_unchecked`
 
 ## [0.3.0] - 2025-07-15
 

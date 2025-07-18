@@ -44,11 +44,11 @@ impl RawPixel for U32x8888 {
     type Storage = u32;
     type Channel = u8;
 
-    fn get_channel(&self, offset: usize) -> Self::Channel {
+    unsafe fn get_channel_unchecked(&self, offset: usize) -> Self::Channel {
         (self.0 >> (offset * 8) & 0xFF) as u8
     }
 
-    fn set_channel(&mut self, offset: usize, value: Self::Channel) -> &mut Self {
+    unsafe fn set_channel_unchecked(&mut self, offset: usize, value: Self::Channel) -> &mut Self {
         let mask = !(0xFF << (offset * 8));
         self.0 = (self.0 & mask) | (u32::from(value) << (offset * 8));
         self

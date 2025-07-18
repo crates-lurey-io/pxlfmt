@@ -42,12 +42,12 @@ impl RawPixel for F32x4 {
     type Storage = [f32; 4];
     type Channel = f32;
 
-    fn get_channel(&self, offset: usize) -> Self::Channel {
-        self.0[offset]
+    unsafe fn get_channel_unchecked(&self, offset: usize) -> Self::Channel {
+        unsafe { *self.0.get_unchecked(offset) }
     }
 
-    fn set_channel(&mut self, offset: usize, value: Self::Channel) -> &mut Self {
-        self.0[offset] = value;
+    unsafe fn set_channel_unchecked(&mut self, offset: usize, value: Self::Channel) -> &mut Self {
+        *unsafe { self.0.get_unchecked_mut(offset) } = value;
         self
     }
 

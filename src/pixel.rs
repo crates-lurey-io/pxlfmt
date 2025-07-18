@@ -76,6 +76,13 @@ impl<F: Format> Pixel<F> {
         Self::from_raw(raw.into())
     }
 
+    /// Creates a new pixel that represents the "zeroed" state of the format.
+    ///
+    /// This is equivalent to `Pixel::new(F::RawPixel::DEFAULT)`.
+    pub const fn zeroed() -> Self {
+        Self::from_raw(F::RawPixel::DEFAULT)
+    }
+
     /// Creates a new pixel from a raw pixel value.
     pub const fn from_raw(raw: F::RawPixel) -> Self {
         Self {
